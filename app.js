@@ -4,7 +4,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-
+var UUID = require('node-uuid');
 var socket_io = require('socket.io');
 
 var app = express();
@@ -12,6 +12,7 @@ var io = socket_io();
 app.io = io;
 var routes = require('./routes/index')(io);
 
+var userQ = [];
 // view engine setup
 app.set('view engine', 'jade');
 
@@ -27,7 +28,17 @@ app.use('/', routes);
 
 
 
-// error handlers
+io.on( "connection", function( socket )
+{
+    socket.userid = UUID();
+    socket.emit('onconnected', { id: socket.userid } );
+    console.log(socket.userid + ' : connected');
+    
+    if(userQ.length > 1) {
+      userQ.pop();
+      io.emit('play', {});
+    }
+});
 
 // development error handler
 // will print stacktrace
