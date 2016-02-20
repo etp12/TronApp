@@ -1,9 +1,14 @@
-var express = require('express');
-var router = express.Router();
+module.exports = function(io) {
+    var app = require('express');
+    var router = app.Router();
+    var path = require('path');
+    router.get('/', function(req, res, next) {
+      res.sendFile(path.join(__dirname + '/test.html'));
+    });
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
+    io.on('connection', function(socket) {
+      console.log('connected!');
+    });
 
-module.exports = router;
+    return router;
+}
