@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<link rel="stylesheet" href="style.css" />
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+		<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+		<script>
+			var socket = io.connect("http://localhost/");
+			
+			socket.on("connect",function() {
+				$("#wait .title").text("Waiting");
+			});
+			socket.on("event id",function(data) {
+				//TODO
+				socket.emit("response id",{my: "data"});
+			});
+			
+			window.addEventListener("load",function() {
+				
+			});
+		</script>
+	</head>
+	<body>
+		<ul class="pages">
+			<li id="game">
+				<canvas></canvas>
+			</li>
+			<li id="wait">
+				<header>
+					<h1 class="title">Connecting</h1>
+					<div class="dots">
+						<div class="dot0"></div>
+						<div class="dot1"></div>
+						<div class="dot2"></div>
+						<div class="dot3"></div>
+					</div>
+				</header>
+			</li>
+		</ul>
+	</body>
+</html>
