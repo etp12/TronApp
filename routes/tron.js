@@ -51,7 +51,6 @@ $(function() {
 		});
 	});
 	socket.on("tick",function(players) {
-		console.log('tick');
 		player = players[playerId];
 		opponent = players[1-playerId];
 	});

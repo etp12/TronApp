@@ -23,34 +23,35 @@ var point = function(x, y) {
   this.y = y;
 }
 
-var players = [{
-  x : 200,
-  y : 300,
-  direction : 68,
-  path : [],
-  addCurrPath : function() {
+var players = [];
+
+var player_object1 = function() {
+  this.x = 190;
+  this.y = 290;
+  this.direction = 68;
+  this.path = [];
+  this.addCurrPath = function() {
     this.path.push(new point(this.x, this.y));
-  },
-  updatePath : function() {
+  };
+  this.updatePath = function() {
     this.path[this.path.length-1].x = this.x;
     this.path[this.path.length-1].y = this.y;
-  }
-},
-{
-  x : 600,
-  y : 300,
-  direction : 65,
-  path : [],
-  addCurrPath : function() {
+  };
+}
+
+var player_object2 = function() {
+  this.x = 590;
+  this.y = 290;
+  this.direction = 65;
+  this.path = [];
+  this.addCurrPath = function() {
     this.path.push(new point(this.x, this.y));
-  },
-  updatePath : function() {
+  };
+  this.updatePath = function() {
     this.path[this.path.length-1].x = this.x;
     this.path[this.path.length-1].y = this.y;
-  }
-}];
-
-
+  };
+}
 
 // view engine setup
 app.set('view engine', 'jade');
@@ -65,8 +66,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 
-
-
+function init() {
+  players = [];
+  players.push(new player_object1());
+  players.push(new player_object2());
+  lastTime = 0;
+  userQ = [];
+}
+init();
 io.sockets.on( "connection", (socket) =>
 {
     socket.userid = UUID();
@@ -96,11 +103,14 @@ io.sockets.on( "connection", (socket) =>
     }
     });
 
-    socket.on('disconnect', function(s) {
-      console.log('disconected');
-
+    socket.on('disconnect', function() {
+      clearTimeout(gameLoopId);
+      init();
     });
-
+    socket.on('close', function() {
+      clearTimeout(gameLoopId);
+      init();
+    });
 
 
 });
@@ -151,7 +161,7 @@ function gameLoop() {
   var t = Date.now();
   var dt = (t - lastTime)/1000;
 
-  players.forEach(function(p, index) {
+  players.forEach((p, index) => {
     if(p.direction === 87) {
       p.y -= speed*dt;
     }
@@ -165,7 +175,9 @@ function gameLoop() {
       p.x += speed*dt;
     }
     if(p.x < 0 || (p.x+20) > 800 || p.y < 0 || (p.y+20) > 600) {
-      io.emit('gameover', index);
+      userQ[0].emit('gameover', i);
+      userQ[1].emit('gameover', i);
+      userQ = [];
       return;
     }
     p.updatePath();
@@ -174,7 +186,6 @@ function gameLoop() {
   for(var i = 0; i < 2; i++) {
     var player = players[i];
     var opponent = players[1-i];
-    console.log(opponent);
     for(var j = 0; j < player.path.length-4; j++) {
       var p1 = player.path[j];
       var p2 = player.path[j+1];
@@ -192,7 +203,9 @@ function gameLoop() {
         }
       }
       if(checkCollisions({x : player.x, y : player.y, width : 20, height : 20}, {x: p1.x, y: p1.y, width: p2.x-p1.x+20, height: p2.y-p1.y+20})) {
-        io.emit('gameover', i);
+        userQ[0].emit('gameover', i);
+        userQ[1].emit('gameover', i);
+        userQ = [];
         return;
       }
     }
@@ -213,7 +226,9 @@ function gameLoop() {
         }
       }
       if(checkCollisions({x : player.x, y : player.y, width : 20, height : 20}, {x: p1.x, y: p1.y, width: p2.x-p1.x+20, height: p2.y-p1.y+20})) {
-        io.emit('gameover', i);
+        userQ[0].emit('gameover', i);
+        userQ[1].emit('gameover', i);
+        userQ = [];
         return;
       }
     }
