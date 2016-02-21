@@ -63,6 +63,7 @@ io.on( "connection", function( socket )
     socket.on('disconnect', function(s) {
       userQ.splice(userQ.indexOf(socket), 1);
       console.log(socket.userid + ' : disconnected');
+      userQ[0].emit('restart', {});
     });
 
 });
