@@ -10,73 +10,118 @@ html,body {
 }
 
 .pages {
-	
+	margin: 0px;
+	padding: 0px;
+	width: 100%;
+	height: 100%;
 	list-style: none;
 }
 
-#wait {
+.pages .page {
 	position: absolute;
-	top: 0px;
-	left: 0px;
+	display: block;
 	width: 100%;
 	height: 100%;
 }
 
-#wait header {
-	position: relative;
-	top: 50%;
-	left: 50%;
-	margin-top: -px;
+.pages .page.wait {
+	text-align: center;
 }
 
 .dots {
-    position: relative;
+	position: relative;
+	display: inline-block;
+	width: 100px;
+	height: 10px;
 }
 
 .dots div {
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    background-color: #000;
-    border-radius: 5px;
-    
-    -webkit-animation-name: dots; /* Chrome, Safari, Opera */
-    -webkit-animation-duration: 1s; /* Chrome, Safari, Opera */
-    -webkit-animation-iteration-count: infinite; /* Chrome, Safari, Opera */
-    animation-name: dots;
-    animation-duration: 1s;
-    animation-iteration-count: infinite;
+	position: absolute;
+	width: 10px;
+	height: 10px;
+	background-color: #000;
+	border-radius: 5px;
+	
+	-webkit-animation-name: dots; /* Chrome, Safari, Opera */
+	-webkit-animation-duration: 1s; /* Chrome, Safari, Opera */
+	-webkit-animation-iteration-count: infinite; /* Chrome, Safari, Opera */
+	animation-name: dots;
+	animation-duration: 1s;
+	animation-iteration-count: infinite;
 }
 
 .dots .dot1 {
-    margin-left: 30px;
-    animation-delay: 0.125s;
+	margin-left: 30px;
+	animation-delay: 0.125s;
 }
 
 .dots .dot2 {
-    margin-left: 60px;
-    animation-delay: 0.25s;
+	margin-left: 60px;
+	animation-delay: 0.25s;
 }
 
 .dots .dot3 {
-    margin-left: 90px;
-    animation-delay: 0.375s;
+	margin-left: 90px;
+	animation-delay: 0.375s;
 }
 
 /* Chrome, Safari, Opera */
 @-webkit-keyframes dots {
-    0%   {width:10px; height:10px; border-radius:5px; left:0px; top:0px;}
-    50%  {width:20px; height:20px; border-radius:10px; left:-5px; top:-5px;}
-    100% {width:10px; height:10px; border-radius:5px; left:0px; top:0px;}
+	0%   {width:10px; height:10px; border-radius:5px; left:0px; top:0px;}
+	50%  {width:20px; height:20px; border-radius:10px; left:-5px; top:-5px;}
+	100% {width:10px; height:10px; border-radius:5px; left:0px; top:0px;}
 }
 
 /* Standard syntax */
 @keyframes dots {
-    0%   {width:10px; height:10px; border-radius:5px; left:0px; top:0px;}
-    50%  {width:20px; height:20px; border-radius:10px; left:-5px; top:-5px;}
-    100% {width:10px; height:10px; border-radius:5px; left:0px; top:0px;}
+	0%   {width:10px; height:10px; border-radius:5px; left:0px; top:0px;}
+	50%  {width:20px; height:20px; border-radius:10px; left:-5px; top:-5px;}
+	100% {width:10px; height:10px; border-radius:5px; left:0px; top:0px;}
+}
+
+.pages .page.game {
+	display: none;
+}
+
+.player-label {
+	position: absolute;
+	display: inline-block;
+	text-align: center;
+}
+
+.arrow-down {
+	display: inline-block;
+	position: relative;
+	width: 0;
+	height: 0;
+	border-left: 10px solid transparent;
+	border-right: 10px solid transparent;
+	border-top: 10px solid #000;
+
+	-webkit-animation-name: hover; /* Chrome, Safari, Opera */
+	-webkit-animation-duration: 1s; /* Chrome, Safari, Opera */
+	-webkit-animation-iteration-count: infinite; /* Chrome, Safari, Opera */
+	animation-name: hover;
+	animation-duration: 1s;
+	animation-iteration-count: infinite;
+}
+
+/* Chrome, Safari, Opera */
+@-webkit-keyframes hover {
+	0%   {top:0px;}
+	50%  {top:5px;}
+	100% {top:0px;}
+}
+
+/* Standard syntax */
+@keyframes hover {
+	0%   {top:0px;}
+	50%  {top:5px;}
+	100% {top:0px;}
 }
 
 canvas {
 	display: block;
+	width: 800px;
+	height: 600px;
 }
