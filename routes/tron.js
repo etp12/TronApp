@@ -12,6 +12,9 @@ $(function() {
 	socket = io();
 	socket.on("connect",function() {
 		$(".page.wait .title").text("Waiting");
+		window.addEventListener("unload",function() {
+			socket.emit("close");
+		});
 	});
 	socket.on("play",function(data) {
 		//time for countdown
@@ -27,7 +30,7 @@ $(function() {
 				reset();
 				$(".page.disconnect").fadeIn(1000,function() {
 					$(".page.game").css({display:"none"});
-					socket.disconnect();
+					socket.emit("close");
 				});
 			});
 			$(".page.game").css({display:"block"});
@@ -62,7 +65,7 @@ function init() {
 		reset();
 		$(".page.gameover").fadeIn(3000,function() {
 			$(".page.game").css({display:"none"});
-			socket.disconnect();
+			socket.emit("close");
 		});
 	});
 	document.addEventListener("keydown",keyHandler);
