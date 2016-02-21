@@ -11,5 +11,8 @@ module.exports = function() {
     router.get('/tron.js', function(req, res, next) {
       res.sendFile(path.join(__dirname + '/tron.js'));
     });
+    router.get('/tron.TTF', function(req, res, next) {
+      res.sendFile(path.join(__dirname + '/tron.TTF'));
+    });
     return router;
 }
