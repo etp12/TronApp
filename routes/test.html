@@ -1,14 +1,13 @@
 <html>
 <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 <script>
-var socket = io();
-socket.on('onconnected', function( data ) {
-    //Note that the data is the object we sent from the server, as is. So we can assume its id exists.
-    console.log( 'ID is ' + data.id );
+  var socket = io();
+  socket.on('onconnected', function( data ) {
+      console.log( 'ID is ' + data.id );
+    });
+  socket.on('play', function(player) {
+    console.log('game should start playing! You are player: '+player.id+ ' x pos: '+player.x+' y pos: '+player.y);
   });
-socket.on('play', function() {
-  console.log('game should start playing!');
-});
 </script>
 test
 </html>
