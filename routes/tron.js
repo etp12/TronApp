@@ -1,3 +1,4 @@
+"use strict";
 //dependencies: JQuery, Socket.IO
 
 var canvas,ctx,socket,player,opponent,playerId;
@@ -6,7 +7,9 @@ var PLAYER_WIDTH = 20;
 var PLAYER_HEIGHT = 20;
 
 $(function() {
-	var socket = io();
+	canvas = document.querySelector("canvas");
+	ctx = canvas.getContext("2d");
+	socket = io();
 	socket.on("connect",function() {
 		$("#wait .title").text("Waiting");
 	});
