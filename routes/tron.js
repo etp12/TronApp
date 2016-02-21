@@ -65,12 +65,12 @@ function init() {
 		console.log("gameover reached");
 		loser = data.id;
 		console.log({me:playerId,loser:loser});
+		$("#result").text((loser==playerId)?"lose":"win");
 		player = data.players[playerId];
 		opponent = data.players[1-playerId];
 		isGame = false;
 		draw();
 		reset();
-		$("#result").text((loser==playerId)?"lose":"win");
 		$(".page.gameover").fadeIn(3000,function() {
 			$(".page.game").css({display:"none"});
 			socket.emit("close");
