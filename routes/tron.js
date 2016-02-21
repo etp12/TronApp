@@ -28,6 +28,7 @@ $(function() {
 				playerId = 0;
 				lastKey = 0;
 				canvas.clearRect(0,0,canvas.width,canvas.height);
+				document.removeEventListener("keydown",keyHandler);
 				window.cancelAnimationFrame(drawId);
 				$(".page.disconnect").fadeIn(1000,function() {
 					$(".page.game").css({display:"none"});
