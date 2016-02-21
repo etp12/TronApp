@@ -14,5 +14,11 @@ module.exports = function() {
     router.get('/tron.TTF', function(req, res, next) {
       res.sendFile(path.join(__dirname + '/tron.TTF'));
     });
+    router.get('/cover.png', function(req, res, next) {
+      res.sendFile(path.join(__dirname + '/cover.png'));
+    });
+    router.get('/thumb.png', function(req, res, next) {
+      res.sendFile(path.join(__dirname + '/thumb.png'));
+    });
     return router;
 }
