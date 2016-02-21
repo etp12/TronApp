@@ -10,9 +10,10 @@ $(function() {
 	socket.on("connect",function() {
 		$("#wait .title").text("Waiting");
 	});
-	socket.on("play",function(id,players) {
+	socket.on("play",function(data) {
 		//time for countdown
-		console.log(id,players);
+		var players = data.p;
+		var id = data.id;
 		player = players[id];
 		opponent = players[1-id];
 		playerId = id;
