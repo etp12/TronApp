@@ -14,15 +14,22 @@ var routes = require('./routes/index')(io);
 var lastTime = 0;
 var userQ = [];
 
+var point = {
+  x : 0,
+  y : 0
+};
+
 var players = [{
   x : 200,
   y : 300,
-  inputs : []
+  direction : 68,
+  path : []
 },
 {
   x : 600,
   y : 300,
-  inputs : []
+  direction : 65,
+  path : []
 }];
 
 
@@ -42,7 +49,7 @@ app.use('/', routes);
 
 
 
-io.on( "connection", function( socket )
+io.on( "connection", (socket) =>
 {
     socket.userid = UUID();
     socket.emit('onconnected', { id: socket.userid } );
@@ -60,10 +67,14 @@ io.on( "connection", function( socket )
     else {
       socket.emit('wait', {});
     }
-    socket.on('disconnect', function(s) {
+    socket.on('disconnect', (s) => {
       userQ.splice(userQ.indexOf(socket), 1);
       console.log(socket.userid + ' : disconnected');
       userQ[0].emit('restart', {});
+    });
+
+    socket.on('input', (keypress, id) => {
+      players[id] = keypress;
     });
 
 });
@@ -103,9 +114,12 @@ function startGame() {
   setTimeout(gameLoop, 4000);
 }
 function gameLoop() {
-  var dt = (Date.now() - lastTime)/1000;
+  
 
 
+
+  io.emit('tick', ({players});
+  process.nextTick(gameLoop);
 }
 
 module.exports = app;
