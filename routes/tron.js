@@ -58,6 +58,7 @@ $(function() {
 	socket.on("tick",function(data) {
 		player = data.players[playerId];
 		opponent = data.players[1-playerId];
+		console.log(player, opponent);
 	});
 
 });
@@ -87,7 +88,7 @@ function draw() {
 				p2 = temp;
 			}
 		}
-		
+
 		ctx.fillRect(p1.x,p1.y,p2.x-p1.x+PLAYER_WIDTH,p2.y-p1.y+PLAYER_HEIGHT);
 	}
 	for(var i=0; i<opponent.path.length-1; i++) {
@@ -106,7 +107,7 @@ function draw() {
 				p2 = temp;
 			}
 		}
-		
+
 		ctx.fillRect(p1.x,p1.y,p2.x-p1.x+PLAYER_WIDTH,p2.y-p1.y+PLAYER_HEIGHT);
 	}
 	ctx.fillRect(player.x,player.y,PLAYER_WIDTH,PLAYER_HEIGHT);

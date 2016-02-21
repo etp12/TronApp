@@ -1,3 +1,4 @@
+"use strict";
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -6,6 +7,9 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var UUID = require('node-uuid');
 var socket_io = require('socket.io');
+
+var gameLoopId;
+var speed = 250;
 
 var app = express();
 var io = socket_io();
@@ -23,7 +27,10 @@ var players = [{
   x : 200,
   y : 300,
   direction : 68,
-  path : []
+  path : [],
+  update : function() {
+    console.log('hi');
+  }
 },
 {
   x : 600,
@@ -49,7 +56,7 @@ app.use('/', routes);
 
 
 
-io.on( "connection", (socket) =>
+io.sockets.on( "connection", (socket) =>
 {
     socket.userid = UUID();
     socket.emit('onconnected', { id: socket.userid } );
@@ -67,15 +74,17 @@ io.on( "connection", (socket) =>
     else {
       socket.emit('wait', {});
     }
-    socket.on('disconnect', (s) => {
-      userQ.splice(userQ.indexOf(socket), 1);
-      console.log(socket.userid + ' : disconnected');
-      userQ[0].emit('restart', {});
+
+    socket.on('input', (data) => {
+      players[data.id].direction = data.keyCode;
     });
 
-    socket.on('input', (keypress, id) => {
-      players[id] = keypress;
+    socket.on('disconnect', function(s) {
+      console.log('disconected');
+
     });
+
+
 
 });
 
@@ -109,17 +118,35 @@ function startGame() {
   players[0].y = 300;
   players[1].x = 600;
   players[1].y = 300;
-  lastTime = Date.now();
 
-  setTimeout(gameLoop, 4000);
+  setTimeout(function() {
+    lastTime = Date.now();
+    gameLoopId = setTimeout(gameLoop,1000/30);
+  }, 4000);
 }
 function gameLoop() {
-  
+  var t = Date.now();
+  var dt = (t - lastTime)/1000;
+
+  players.forEach(function(p, index) {
+    if(p.direction === 87) {
+      p.y -= speed*dt;
+    }
+    else if (p.direction === 83) {
+      p.y += speed*dt;
+    }
+    else if (p.direction === 65) {
+      p.x -= speed*dt;
+    }
+    else if (p.direction === 68) {
+      p.x += speed*dt;
+    }
+  });
 
 
-
-  io.emit('tick', ({players});
-  process.nextTick(gameLoop);
+  io.emit('tick', {players : players});
+  lastTime = t;
+  gameLoopId = setTimeout(gameLoop, 1000/30);
 }
 
 module.exports = app;
