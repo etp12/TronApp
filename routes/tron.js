@@ -5,6 +5,7 @@ var canvas,ctx,socket,player,opponent,playerId,drawId;
 var lastKey = 0;
 var PLAYER_WIDTH = 20;
 var PLAYER_HEIGHT = 20;
+var isGame = false;
 
 $(function() {
 	canvas = document.querySelector("canvas");
@@ -23,6 +24,7 @@ $(function() {
 		player = players[id];
 		opponent = players[1-id];
 		playerId = id;
+		isGame = true;
 		$(".page.wait").fadeOut(1000,function() {
 			//remove waiting screen, then...
 			socket.on("restart",function() {
@@ -60,12 +62,13 @@ $(function() {
 function init() {
 	socket.on("gameover",function(data) {
 		console.log("gameover reached");
-		$("#result").text((id==playerId)?"lose":"win");
 		var id = data.id;
 		player = data.players[playerId];
 		opponent = data.players[1-playerId];
+		isGame = false;
 		draw();
 		reset();
+		$("#result").text((id==playerId)?"lose":"win");
 		$(".page.gameover").fadeIn(3000,function() {
 			$(".page.game").css({display:"none"});
 			socket.emit("close");
@@ -78,7 +81,7 @@ function init() {
 function draw() {
 	ctx.fillStyle = "#000";
 	ctx.fillRect(0,0,canvas.width,canvas.height);
-	ctx.fillStyle = "#fff";
+	ctx.fillStyle = (isGame)?"#fff":"#f00";
 	for(var i=0; i<player.path.length-1; i++) {
 		var p1 = player.path[i];
 		var p2 = player.path[i+1];
@@ -119,7 +122,9 @@ function draw() {
 	}
 	ctx.fillRect(player.x,player.y,PLAYER_WIDTH,PLAYER_HEIGHT);
 	ctx.fillRect(opponent.x,opponent.y,PLAYER_WIDTH,PLAYER_HEIGHT);
-	drawId = window.requestAnimationFrame(draw);
+	if(isGame) {
+		drawId = window.requestAnimationFrame(draw);
+	}
 }
 
 function keyHandler(e) {
@@ -139,4 +144,5 @@ function reset() {
 	opponent = null;
 	playerId = 0;
 	lastKey = 0;
+	isGame = false;
 }
