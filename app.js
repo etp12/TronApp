@@ -18,25 +18,36 @@ var routes = require('./routes/index')(io);
 var lastTime = 0;
 var userQ = [];
 
-var point = {
-  x : 0,
-  y : 0
-};
+var point = function(x, y) {
+  this.x = x;
+  this.y = y;
+}
 
 var players = [{
   x : 200,
   y : 300,
   direction : 68,
   path : [],
-  update : function() {
-    console.log('hi');
+  addCurrPath : function() {
+    this.path.push(new point(this.x, this.y));
+  },
+  updatePath : function() {
+    this.path[this.path.length-1].x = this.x;
+    this.path[this.path.length-1].y = this.y;
   }
 },
 {
   x : 600,
   y : 300,
   direction : 65,
-  path : []
+  path : [],
+  addCurrPath : function() {
+    this.path.push(new point(this.x, this.y));
+  },
+  updatePath : function() {
+    this.path[this.path.length-1].x = this.x;
+    this.path[this.path.length-1].y = this.y;
+  }
 }];
 
 
@@ -77,6 +88,8 @@ io.sockets.on( "connection", (socket) =>
 
     socket.on('input', (data) => {
       players[data.id].direction = data.keyCode;
+      players[0].addCurrPath();
+      players[1].addCurrPath();
     });
 
     socket.on('disconnect', function(s) {
@@ -119,6 +132,12 @@ function startGame() {
   players[1].x = 600;
   players[1].y = 300;
 
+  players[0].addCurrPath();
+  players[1].addCurrPath();
+
+  players[0].addCurrPath();
+  players[1].addCurrPath();
+
   setTimeout(function() {
     lastTime = Date.now();
     gameLoopId = setTimeout(gameLoop,1000/30);
@@ -141,12 +160,72 @@ function gameLoop() {
     else if (p.direction === 68) {
       p.x += speed*dt;
     }
+    if(p.x < 0 || (p.x+20) > 800 || p.y < 0 || (p.y+20) > 600) {
+      io.emit('gameover', index);
+      return;
+    }
+    p.updatePath();
   });
 
-
-  io.emit('tick', {players : players});
+  for(var i = 0; i < 2; i++) {
+    var player = players[i];
+    var opponent = players[1-i];
+    console.log(opponent);
+    for(var j = 0; j < player.path.length-4; j++) {
+      var p1 = player.path[j];
+      var p2 = player.path[j+1];
+      if(p1.x==p2.x) {
+        if(p1.y>p2.y) {
+          var temp = p1;
+          p1 = p2;
+          p2 = temp;
+        }
+      } else {
+        if(p1.x>p2.x) {
+          var temp = p1;
+          p1 = p2;
+          p2 = temp;
+        }
+      }
+      if(checkCollisions({x : player.x, y : player.y, width : 20, height : 20}, {x: p1.x, y: p1.y, width: p2.x-p1.x+20, height: p2.y-p1.y+20})) {
+        io.emit('gameover', i);
+        return;
+      }
+    }
+    for(var j = 0; j < opponent.path.length-1; j++) {
+      var p1 = opponent.path[j];
+      var p2 = opponent.path[j+1];
+      if(p1.x==p2.x) {
+        if(p1.y>p2.y) {
+          var temp = p1;
+          p1 = p2;
+          p2 = temp;
+        }
+      } else {
+        if(p1.x>p2.x) {
+          var temp = p1;
+          p1 = p2;
+          p2 = temp;
+        }
+      }
+      if(checkCollisions({x : player.x, y : player.y, width : 20, height : 20}, {x: p1.x, y: p1.y, width: p2.x-p1.x+20, height: p2.y-p1.y+20})) {
+        io.emit('gameover', i);
+        return;
+      }
+    }
+  }
+  io.emit('tick', players);
   lastTime = t;
   gameLoopId = setTimeout(gameLoop, 1000/30);
+}
+
+function checkCollisions(player, pathRect) {
+
+  return player.y + player.height > pathRect.y && player.y < pathRect.y && player.x + player.width > pathRect.x && player.x < pathRect.x + pathRect.width ||
+    player.x < pathRect.x + pathRect.width && player.x + player.width > pathRect.x + pathRect.width && player.y + player.height > pathRect.y && player.y < pathRect.y + pathRect.height ||
+    player.y < pathRect.y + pathRect.height & player.y + player.height > pathRect.y + pathRect.height && player.x + player.width > pathRect.x && player.x < pathRect.x + pathRect.width ||
+    player.x + player.width > pathRect.x && player.x < pathRect.x && player.y + player.height > pathRect.y && player.y < pathRect.y + pathRect.height;
+
 }
 
 module.exports = app;

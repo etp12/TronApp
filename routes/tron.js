@@ -23,6 +23,7 @@ $(function() {
 		$(".page.wait").fadeOut(1000,function() {
 			//remove waiting screen, then...
 			socket.on("restart",function() {
+				console.log('restart');
 				reset();
 				$(".page.disconnect").fadeIn(1000,function() {
 					$(".page.game").css({display:"none"});
@@ -47,6 +48,7 @@ $(function() {
 		});
 	});
 	socket.on("tick",function(players) {
+		console.log('tick');
 		player = players[playerId];
 		opponent = players[1-playerId];
 	});
@@ -55,9 +57,10 @@ $(function() {
 
 function init() {
 	socket.on("gameover",function(id) {
+		console.log('gameover reached');
 		$("#result").text((id==playerId)?"lose":"win");
 		reset();
-		$(".page.gameover").fadeIn(1000,function() {
+		$(".page.gameover").fadeIn(3000,function() {
 			$(".page.game").css({display:"none"});
 			socket.disconnect();
 		});
