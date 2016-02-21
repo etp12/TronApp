@@ -8,9 +8,13 @@ var bodyParser = require('body-parser');
 var UUID = require('node-uuid');
 var socket_io = require('socket.io');
 
+//var Queue = require('./Queue.js').Queue;
+
+var client1;
+var client2;
+var isGame = false;
 var gameLoopId;
 var speed = 250;
-
 var app = express();
 var io = socket_io();
 app.io = io;
@@ -18,13 +22,14 @@ var routes = require('./routes/index')(io);
 var lastTime = 0;
 var userQ = [];
 
+
+
 var point = function(x, y) {
   this.x = x;
   this.y = y;
 }
 
 var players = [];
-
 var player_object1 = function() {
   this.x = 190;
   this.y = 290;
@@ -71,7 +76,6 @@ function init() {
   players.push(new player_object1());
   players.push(new player_object2());
   lastTime = 0;
-  userQ = [];
 }
 init();
 io.sockets.on( "connection", (socket) =>
@@ -79,18 +83,16 @@ io.sockets.on( "connection", (socket) =>
     socket.userid = UUID();
     socket.emit('onconnected', { id: socket.userid } );
     console.log(socket.userid + ' : connected');
-
     if(userQ.length === 0) {
       userQ.push(socket);
     }
-    else if(userQ.length === 1) {
+    else if(!isGame) {
       userQ.push(socket);
-      userQ[0].emit('play', {id: 0, p: players});
-      userQ[1].emit('play', {id: 1, p: players});
+      console.log('creating game');
+      client1 = userQ.shift().emit('play', {id: 0, p: players});
+      client2 = userQ.shift().emit('play', {id: 1, p: players});
+      isGame = true;
       startGame();
-    }
-    else {
-      socket.emit('wait', {});
     }
 
     socket.on('input', (data) => {
@@ -104,14 +106,16 @@ io.sockets.on( "connection", (socket) =>
     });
 
     socket.on('disconnect', function() {
-      clearTimeout(gameLoopId);
-      init();
+      if(socket == client1 || socket == client2) {
+        console.log('userId equals');
+        onDisconnect();
+      }
+      else {
+        var index = userQ.indexOf(socket);
+        if(index >= 0)
+          userQ.splice(index, 1);
+      }
     });
-    socket.on('close', function() {
-      clearTimeout(gameLoopId);
-      init();
-    });
-
 
 });
 
@@ -160,7 +164,10 @@ function startGame() {
 function gameLoop() {
   var t = Date.now();
   var dt = (t - lastTime)/1000;
-
+  if(!isGame) {
+    clearTimeout(gameLoopId);
+    return;
+  }
   players.forEach((p, index) => {
     if(p.direction === 87) {
       p.y -= speed*dt;
@@ -175,9 +182,8 @@ function gameLoop() {
       p.x += speed*dt;
     }
     if(p.x < 0 || (p.x+20) > 800 || p.y < 0 || (p.y+20) > 600) {
-      userQ[0].emit('gameover', i);
-      userQ[1].emit('gameover', i);
-      userQ = [];
+
+      endGame(index);
       return;
     }
     p.updatePath();
@@ -203,9 +209,8 @@ function gameLoop() {
         }
       }
       if(checkCollisions({x : player.x, y : player.y, width : 20, height : 20}, {x: p1.x, y: p1.y, width: p2.x-p1.x+20, height: p2.y-p1.y+20})) {
-        userQ[0].emit('gameover', i);
-        userQ[1].emit('gameover', i);
-        userQ = [];
+
+        endGame(i);
         return;
       }
     }
@@ -226,9 +231,8 @@ function gameLoop() {
         }
       }
       if(checkCollisions({x : player.x, y : player.y, width : 20, height : 20}, {x: p1.x, y: p1.y, width: p2.x-p1.x+20, height: p2.y-p1.y+20})) {
-        userQ[0].emit('gameover', i);
-        userQ[1].emit('gameover', i);
-        userQ = [];
+
+        endGame(i);
         return;
       }
     }
@@ -236,6 +240,27 @@ function gameLoop() {
   io.emit('tick', players);
   lastTime = t;
   gameLoopId = setTimeout(gameLoop, 1000/30);
+}
+function endGame(id) {
+  client1.emit('gameover', id);
+  client2.emit('gameover', id);
+  init();
+  isGame = false;
+}
+
+function onDisconnect() {
+  init();
+  isGame = false;
+  client1.emit('restart');
+  client2.emit('restart');
+  clearTimeout(gameLoopId);
+
+  if(userQ.length >= 2) {
+    client1 = userQ.shift().emit('play', {id: 0, p: players});
+    client2 = userQ.shift().emit('play', {id: 1, p: players});
+    isGame = true;
+    startGame();
+  }
 }
 
 function checkCollisions(player, pathRect) {
