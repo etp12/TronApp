@@ -55,8 +55,8 @@ $(function() {
 
 function init() {
 	socket.on("gameover",function(id) {
-		reset();
 		$("#result").text((id==playerId)?"lose":"win");
+		reset();
 		$(".page.gameover").fadeIn(1000,function() {
 			$(".page.game").css({display:"none"});
 			socket.disconnect();
