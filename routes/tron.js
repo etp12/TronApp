@@ -23,20 +23,10 @@ $(function() {
 		$(".page.wait").fadeOut(1000,function() {
 			//remove waiting screen, then...
 			socket.on("restart",function() {
-				player = null;
-				opponent = null;
-				playerId = 0;
-				lastKey = 0;
-				canvas.clearRect(0,0,canvas.width,canvas.height);
-				document.removeEventListener("keydown",keyHandler);
-				window.cancelAnimationFrame(drawId);
+				reset();
 				$(".page.disconnect").fadeIn(1000,function() {
 					$(".page.game").css({display:"none"});
-					setTimeout(function() {
-						$(".page.disconnect").fadeOut(function() {
-							$(".page.wait").css({display:"block"});
-						},1000);
-					},1000);
+					socket.disconnect();
 				});
 			});
 			$(".page.game").css({display:"block"});
@@ -56,15 +46,22 @@ $(function() {
 			},2000);
 		});
 	});
-	socket.on("tick",function(data) {
-		player = data.players[playerId];
-		opponent = data.players[1-playerId];
-		console.log(player, opponent);
+	socket.on("tick",function(players) {
+		player = players[playerId];
+		opponent = players[1-playerId];
 	});
 
 });
 
 function init() {
+	socket.on("gameover",function(id) {
+		reset();
+		$("#result").text((id==playerId)?"lose":"win");
+		$(".page.gameover").fadeIn(1000,function() {
+			$(".page.game").css({display:"none"});
+			socket.disconnect();
+		});
+	});
 	document.addEventListener("keydown",keyHandler);
 	drawId = window.requestAnimationFrame(draw);
 }
@@ -124,4 +121,13 @@ function keyHandler(e) {
 			lastKey = key;
 		}
 	}
+}
+
+function reset() {
+	player = null;
+	opponent = null;
+	playerId = 0;
+	lastKey = 0;
+	document.removeEventListener("keydown",keyHandler);
+	window.cancelAnimationFrame(drawId);
 }

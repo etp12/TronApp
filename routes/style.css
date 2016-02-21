@@ -25,7 +25,7 @@ html,body {
 
 .pages .page {
 	position: absolute;
-	display: block;
+	display: none;
 	width: 100%;
 	height: 100%;
 	background: #fff;
@@ -36,9 +36,17 @@ html,body {
 	text-align: center;
 }
 
-.pages .page header h1 {
+.pages .page header .title {
 	margin: 0px;
 	padding: 15px 0px;
+}
+
+.pages .page.game header .title.tron {
+	font-family: Tron,monospace;
+}
+
+.pages .page.wait {
+	display: block;
 }
 
 .dots {
@@ -90,18 +98,6 @@ html,body {
 	0%   {width:10px; height:10px; border-radius:5px; left:0px; top:0px;}
 	50%  {width:20px; height:20px; border-radius:10px; left:-5px; top:-5px;}
 	100% {width:10px; height:10px; border-radius:5px; left:0px; top:0px;}
-}
-
-.pages .page.disconnect {
-	display: none;
-}
-
-.pages .page.game {
-	display: none;
-}
-
-.pages .page.game header h1 {
-	font-family: Tron,monospace;
 }
 
 #gamewrapper {
