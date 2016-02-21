@@ -3,7 +3,7 @@
 var canvas,ctx,socket,player,opponent;
 
 $(function() {
-	socket = io.connect("http://localhost/");
+	var socket = io();
 	socket.on("connect",function() {
 		$("#wait .title").text("Waiting");
 	});
@@ -16,7 +16,7 @@ $(function() {
 			$playerLabel.css({top:"px",left:"px"})
 			setTimeout(function() {
 				$playerLabel.fadeOut(1000,function() {
-					
+
 					window.requestAnimationFrame(draw);
 				});
 			},2000);
@@ -25,10 +25,10 @@ $(function() {
 	socket.on("tick",function(data) {
 		//assign player and opponent positions, and paths
 	});
-	
+
 });
 
 function draw() {
-	
+
 	window.requestAnimationFrame(draw);
 }

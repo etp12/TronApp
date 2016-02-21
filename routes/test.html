@@ -5,8 +5,8 @@
   socket.on('onconnected', function( data ) {
       console.log( 'ID is ' + data.id );
     });
-  socket.on('play', function(player) {
-    console.log('game should start playing! You are player: '+player.id+ ' x pos: '+player.x+' y pos: '+player.y);
+  socket.on('play', function(id, player) {
+    console.log(id);
   });
 </script>
 test

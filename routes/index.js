@@ -3,7 +3,13 @@ module.exports = function() {
     var router = app.Router();
     var path = require('path');
     router.get('/', function(req, res, next) {
-      res.sendFile(path.join(__dirname + '/test.html'));
+      res.sendFile(path.join(__dirname + '/index.html'));
+    });
+    router.get('/style.css', function(req, res, next) {
+      res.sendFile(path.join(__dirname + '/style.css'));
+    });
+    router.get('/tron.js', function(req, res, next) {
+      res.sendFile(path.join(__dirname + '/tron.js'));
     });
     return router;
 }
