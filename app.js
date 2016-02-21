@@ -246,6 +246,10 @@ function endGame(id) {
   init();
   isGame = false;
   clearTimeout(gameLoopId);
+
+  client1 = null;
+  client2 = null;
+
   if(userQ.length >= 2) {
     client1 = userQ.shift().emit('play', {id: 0, p: players});
     client2 = userQ.shift().emit('play', {id: 1, p: players});
@@ -260,6 +264,9 @@ function onDisconnect() {
   client1.emit('restart');
   client2.emit('restart');
   clearTimeout(gameLoopId);
+
+  client1 = null;
+  client2 = null;
 
   if(userQ.length >= 2) {
     client1 = userQ.shift().emit('play', {id: 0, p: players});
