@@ -6,6 +6,7 @@ var lastKey = 0;
 var PLAYER_WIDTH = 20;
 var PLAYER_HEIGHT = 20;
 var isGame = false;
+var loser = -1;
 
 $(function() {
 	canvas = document.querySelector("canvas");
@@ -62,13 +63,13 @@ $(function() {
 function init() {
 	socket.on("gameover",function(data) {
 		console.log("gameover reached");
-		var id = data.id;
+		loser = data.id;
 		player = data.players[playerId];
 		opponent = data.players[1-playerId];
 		isGame = false;
 		draw();
 		reset();
-		$("#result").text((id==playerId)?"lose":"win");
+		$("#result").text((loser==playerId)?"lose":"win");
 		$(".page.gameover").fadeIn(3000,function() {
 			$(".page.game").css({display:"none"});
 			socket.emit("close");
@@ -81,7 +82,8 @@ function init() {
 function draw() {
 	ctx.fillStyle = "#000";
 	ctx.fillRect(0,0,canvas.width,canvas.height);
-	ctx.fillStyle = (isGame)?"#fff":"#f00";
+	
+	ctx.fillStyle = (!isGame&&loser==playerId)?"#f00":"#fff";
 	for(var i=0; i<player.path.length-1; i++) {
 		var p1 = player.path[i];
 		var p2 = player.path[i+1];
@@ -101,6 +103,9 @@ function draw() {
 
 		ctx.fillRect(p1.x,p1.y,p2.x-p1.x+PLAYER_WIDTH,p2.y-p1.y+PLAYER_HEIGHT);
 	}
+	ctx.fillRect(player.x,player.y,PLAYER_WIDTH,PLAYER_HEIGHT);
+	
+	ctx.fillStyle = (!isGame&&loser!=playerId)?"#f00":"#fff";
 	for(var i=0; i<opponent.path.length-1; i++) {
 		var p1 = opponent.path[i];
 		var p2 = opponent.path[i+1];
@@ -120,8 +125,8 @@ function draw() {
 
 		ctx.fillRect(p1.x,p1.y,p2.x-p1.x+PLAYER_WIDTH,p2.y-p1.y+PLAYER_HEIGHT);
 	}
-	ctx.fillRect(player.x,player.y,PLAYER_WIDTH,PLAYER_HEIGHT);
 	ctx.fillRect(opponent.x,opponent.y,PLAYER_WIDTH,PLAYER_HEIGHT);
+	
 	if(isGame) {
 		drawId = window.requestAnimationFrame(draw);
 	}
@@ -145,4 +150,5 @@ function reset() {
 	playerId = 0;
 	lastKey = 0;
 	isGame = false;
+	loser = -1;
 }
