@@ -88,7 +88,6 @@ io.sockets.on( "connection", (socket) =>
     }
     else if(!isGame) {
       userQ.push(socket);
-      console.log('creating game');
       client1 = userQ.shift().emit('play', {id: 0, p: players});
       client2 = userQ.shift().emit('play', {id: 1, p: players});
       isGame = true;
@@ -231,7 +230,6 @@ function gameLoop() {
         }
       }
       if(checkCollisions({x : player.x, y : player.y, width : 20, height : 20}, {x: p1.x, y: p1.y, width: p2.x-p1.x+20, height: p2.y-p1.y+20})) {
-
         endGame(i);
         return;
       }
@@ -242,10 +240,18 @@ function gameLoop() {
   gameLoopId = setTimeout(gameLoop, 1000/30);
 }
 function endGame(id) {
-  client1.emit('gameover', id);
-  client2.emit('gameover', id);
+
+  client1.emit('gameover', {id : id, players : players});
+  client2.emit('gameover', {id : id, players : players}); //edited, save me
   init();
   isGame = false;
+  clearTimeout(gameLoopId);
+  if(userQ.length >= 2) {
+    client1 = userQ.shift().emit('play', {id: 0, p: players});
+    client2 = userQ.shift().emit('play', {id: 1, p: players});
+    isGame = true;
+    startGame();
+  }
 }
 
 function onDisconnect() {
