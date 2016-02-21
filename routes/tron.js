@@ -1,7 +1,7 @@
 "use strict";
 //dependencies: JQuery, Socket.IO
 
-var canvas,ctx,socket,player,opponent,playerId;
+var canvas,ctx,socket,player,opponent,playerId,drawId;
 var lastKey = 0;
 var PLAYER_WIDTH = 20;
 var PLAYER_HEIGHT = 20;
@@ -22,9 +22,28 @@ $(function() {
 		playerId = id;
 		$(".page.wait").fadeOut(1000,function() {
 			//remove waiting screen, then...
+			socket.on("restart",function() {
+				player = null;
+				opponent = null;
+				playerId = 0;
+				lastKey = 0;
+				canvas.clearRect(0,0,canvas.width,canvas.height);
+				window.cancelAnimationFrame(drawId);
+				$(".page.disconnect").fadeIn(1000,function() {
+					$(".page.game").css({display:"none"});
+					setTimeout(function() {
+						$(".page.disconnect").fadeOut(function() {
+							$(".page.wait").css({display:"block"});
+						},1000);
+					},1000);
+				});
+			});
 			$(".page.game").css({display:"block"});
 			var $playerLabel = $(".player-label");
-			$playerLabel.css({top:player.y-$playerLabel.height()+"px", left:player.x+PLAYER_WIDTH/2-$playerLabel.width()/2+"px"});
+			$playerLabel.css({
+				top: player.y-$playerLabel.height()+"px",
+				left: player.x+PLAYER_WIDTH/2-$playerLabel.width()/2+"px"
+			});
 			ctx.fillStyle = "#000";
 			ctx.fillRect(0,0,canvas.width,canvas.height);
 			ctx.fillStyle = "#fff";
@@ -44,8 +63,8 @@ $(function() {
 });
 
 function init() {
-	window.requestAnimationFrame(draw);
 	document.addEventListener("keydown",keyHandler);
+	drawId = window.requestAnimationFrame(draw);
 }
 
 function draw() {
@@ -92,7 +111,7 @@ function draw() {
 	}
 	ctx.fillRect(player.x,player.y,PLAYER_WIDTH,PLAYER_HEIGHT);
 	ctx.fillRect(opponent.x,opponent.y,PLAYER_WIDTH,PLAYER_HEIGHT);
-	window.requestAnimationFrame(draw);
+	drawId = window.requestAnimationFrame(draw);
 }
 
 function keyHandler(e) {
