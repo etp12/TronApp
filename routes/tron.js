@@ -135,8 +135,14 @@ function draw() {
 
 function keyHandler(e) {
 	var key = e.keyCode;
+	var keys = [37,38,39,40];
+	var vals = [65,87,68,83];
+	var index = keys.indexOf(key);
+	if(index!=-1) {
+		key = vals[index];
+	}
 	if(key!=0&&key!=lastKey) {
-		if(key==65||key==68||key==83||key==87) {
+		if(vals.indexOf(key)!=-1) {
 			socket.emit("input",{keyCode:key,id:playerId});
 			lastKey = key;
 		}
