@@ -2,7 +2,7 @@
 //dependencies: JQuery, Socket.IO
 
 var canvas,ctx,socket,player,opponent,playerId,drawId;
-var lastKey = 0;
+var direction = 0;
 var PLAYER_WIDTH = 20;
 var PLAYER_HEIGHT = 20;
 var isGame = false;
@@ -25,6 +25,7 @@ $(function() {
 		player = players[id];
 		opponent = players[1-id];
 		playerId = id;
+		direction = player.direction;
 		isGame = true;
 		$(".page.wait").fadeOut(1000,function() {
 			//remove waiting screen, then...
@@ -141,11 +142,11 @@ function keyHandler(e) {
 	if(index!=-1) {
 		key = vals[index];
 	}
-	if(key!=0&&key!=lastKey) {
+	if(key!=0&&key!=direction) {
 		index = vals.indexOf(key);
-		if(index!=-1&&vals[index]!=vals[(vals.indexOf(lastKey)+2)%vals.length]&&vals[index]!=lastKey) {
+		if(index!=-1&&vals[index]!=vals[(vals.indexOf(direction)+2)%vals.length]&&vals[index]!=direction) {
 			socket.emit("input",{keyCode:key,id:playerId});
-			lastKey = key;
+			direction = key;
 		}
 	}
 }
@@ -156,7 +157,7 @@ function reset() {
 	player = null;
 	opponent = null;
 	playerId = 0;
-	lastKey = 0;
+	direction = 0;
 	isGame = false;
 	loser = -1;
 }
