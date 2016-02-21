@@ -64,6 +64,7 @@ function init() {
 	socket.on("gameover",function(data) {
 		console.log("gameover reached");
 		loser = data.id;
+		console.log({me:playerId,loser:loser});
 		player = data.players[playerId];
 		opponent = data.players[1-playerId];
 		isGame = false;
