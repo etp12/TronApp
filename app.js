@@ -92,8 +92,7 @@ io.sockets.on( "connection", (socket) =>
       var d = Math.hypot(p2.x - p1.x, p2.y - p1.y);
       if(d >= 20) {
         players[data.id].direction = data.keyCode;
-        players[0].addCurrPath();
-        players[1].addCurrPath();
+        players[data.id].addCurrPath();
     }
     });
 
