@@ -87,9 +87,13 @@ io.sockets.on( "connection", (socket) =>
     }
 
     socket.on('input', (data) => {
-      players[data.id].direction = data.keyCode;
-      players[0].addCurrPath();
-      players[1].addCurrPath();
+      var p1 = players[data.id].path[players[data.id].path.length-2];
+      var p2 = players[data.id].path[players[data.id].path.length-1];
+      var d = Math.hypot(p2.x - p1.x, p2.y - p1.y);
+      if(d >= 20) {
+        players[data.id].direction = data.keyCode;
+        players[data.id].addCurrPath();
+    }
     });
 
     socket.on('disconnect', function(s) {
