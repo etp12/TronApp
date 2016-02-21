@@ -26,7 +26,7 @@ $(function() {
 		$(".page.wait").fadeOut(1000,function() {
 			//remove waiting screen, then...
 			socket.on("restart",function() {
-				console.log('restart');
+				console.log("restart");
 				reset();
 				$(".page.disconnect").fadeIn(1000,function() {
 					$(".page.game").css({display:"none"});
@@ -58,9 +58,13 @@ $(function() {
 });
 
 function init() {
-	socket.on("gameover",function(id) {
-		console.log('gameover reached');
+	socket.on("gameover",function(data) {
+		console.log("gameover reached");
 		$("#result").text((id==playerId)?"lose":"win");
+		var id = data.id;
+		player = data.players[playerId];
+		opponent = data.players[1-playerId];
+		draw();
 		reset();
 		$(".page.gameover").fadeIn(3000,function() {
 			$(".page.game").css({display:"none"});
@@ -129,10 +133,10 @@ function keyHandler(e) {
 }
 
 function reset() {
+	document.removeEventListener("keydown",keyHandler);
+	window.cancelAnimationFrame(drawId);
 	player = null;
 	opponent = null;
 	playerId = 0;
 	lastKey = 0;
-	document.removeEventListener("keydown",keyHandler);
-	window.cancelAnimationFrame(drawId);
 }
