@@ -26,15 +26,8 @@ $(function() {
 			ctx.fillRect(player.x,player.y,PLAYER_WIDTH,PLAYER_HEIGHT);
 			ctx.fillRect(opponent.x,opponent.y,PLAYER_WIDTH,PLAYER_HEIGHT);
 			setTimeout(function() {
-<<<<<<< HEAD
 				//delay 2 seconds, then...
 				$playerLabel.fadeOut(1000,init);
-=======
-				$playerLabel.fadeOut(1000,function() {
-
-					window.requestAnimationFrame(draw);
-				});
->>>>>>> 8456b1163ede4d81039037f9b3622e2d3a9d9ba0
 			},2000);
 		});
 	});
@@ -51,7 +44,6 @@ function init() {
 }
 
 function draw() {
-<<<<<<< HEAD
 	ctx.fillStyle = "#000";
 	ctx.fillRect(0,0,canvas.width,canvas.height);
 	ctx.fillStyle = "#fff";
@@ -107,8 +99,3 @@ function keyHandler(e) {
 		}
 	}
 }
-=======
-
-	window.requestAnimationFrame(draw);
-}
->>>>>>> 8456b1163ede4d81039037f9b3622e2d3a9d9ba0
