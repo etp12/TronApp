@@ -142,7 +142,8 @@ function keyHandler(e) {
 		key = vals[index];
 	}
 	if(key!=0&&key!=lastKey) {
-		if(vals.indexOf(key)!=-1) {
+		index = vals.indexOf(key);
+		if(index!=-1&&vals[index]!=vals[(lastKey+2)%vals.length]) {
 			socket.emit("input",{keyCode:key,id:playerId});
 			lastKey = key;
 		}
