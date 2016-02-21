@@ -11,7 +11,7 @@ $(function() {
 	ctx = canvas.getContext("2d");
 	socket = io();
 	socket.on("connect",function() {
-		$("#wait .title").text("Waiting");
+		$(".page.wait .title").text("Waiting");
 	});
 	socket.on("play",function(data) {
 		//time for countdown
