@@ -12,6 +12,7 @@ $(function() {
 	});
 	socket.on("play",function(id,players) {
 		//time for countdown
+		console.log(id,players);
 		player = players[id];
 		opponent = players[1-id];
 		playerId = id;
